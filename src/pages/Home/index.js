@@ -13,23 +13,18 @@ import Modal from "../../containers/Modal";
 import { useData } from "../../contexts/DataContext";
 
 const Page = () => {
-  const { data } = useData();
 
-  // Array of event objects
-  
-  const sortedEvents = data?.events && data.events.length > 0
-  ? data.events.slice().sort((a, b) => {
-      // Convert dates to Date objects
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
+// suppr const {last} = useData()
 
-      // Compare dates in descending order
-      return dateB - dateA;
-    })
-  : [];
-  
-  // Get the last event after sorting
-  const last = sortedEvents.length > 0 ? sortedEvents[0] : null;
+// ajout fonction de tri
+const {data,error} = useData()
+const dataSortedByDate = data?.events.sort((a,b)=> new Date(b.date) - new Date(a.date)) || []
+
+const last = data ? dataSortedByDate[0]: null
+
+//      //
+
+
 
   return <>
     <header>
@@ -40,7 +35,7 @@ const Page = () => {
         <Slider />
       </section>
       <section className="ServicesContainer">
-        <h2 className="Title">Nos services</h2>
+        <h2 className="Title" id="nos-services">Nos services</h2>
         <p>Nous organisons des événements sur mesure partout dans le monde</p>
         <div className="ListContainer">
           <ServiceCard imageSrc="/images/priscilla-du-preez-Q7wGvnbuwj0-unsplash1.png">
@@ -52,7 +47,7 @@ const Page = () => {
           </ServiceCard>
           <ServiceCard imageSrc="/images/hall-expo.png">
             <h3>Conférences</h3>
-            724 events vous propose d’organiser votre évènement, quelle que soit
+            77 events vous propose d’organiser votre évènement, quelle que soit
             sa taille, en s’adaptant à votre demande et à vos demandes. En tant
             que spécialistes de l’évènementiel, nous saurons trouver le lieu
             parfait ainsi que des solutions inédites pour capter votre audience
@@ -69,11 +64,11 @@ const Page = () => {
         </div>
       </section>
       <section className="EventsContainer">
-        <h2 className="Title">Nos réalisations</h2>
+        <h2 className="Title" id="nos-realisations">Nos réalisations</h2>
         <EventList />
       </section>
       <section className="PeoplesContainer">
-        <h2 className="Title">Notre équipe</h2>
+        <h2 className="Title" id="notre-equipe">Notre équipe</h2>
         <p>Une équipe d’experts dédiés à l’ogranisation de vos événements</p>
         <div className="ListContainer">
           <PeopleCard
@@ -133,19 +128,26 @@ const Page = () => {
     <footer className="row">
       <div className="col presta">
         <h3>Notre derniére prestation</h3>
+        {/* ajout gestion de l error */}
+        {error && <div>An error occured</div>}
+      {last === null ? (
+        "loading"
+      ) : (
         <EventCard
-          imageSrc={last?.cover}
-          title={last?.title}
-          date={new Date(last?.date)}
+        // modif last? -> last
+          imageSrc={last.cover} 
+          title={last.title}
+          date={new Date(last.date)}
           small
           label="boom"
         />
+         )} 
       </div>
       <div className="col contact">
         <h3>Contactez-nous</h3>
         <address>45 avenue de la République, 75000 Paris</address>
         <div>01 23 45 67 89</div>
-        <div>contact@724events.com</div>
+        <div>contact@77events.com</div>
         <div>
           <a href="#twitch">
             <Icon name="twitch" />

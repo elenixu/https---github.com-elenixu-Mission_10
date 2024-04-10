@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import EventCard from "../../components/EventCard";
 import Select from "../../components/Select";
 import { useData } from "../../contexts/DataContext";
@@ -7,50 +7,39 @@ import ModalEvent from "../ModalEvent";
 
 import "./style.css";
 
+
 const PER_PAGE = 9;
 
 const EventList = () => {
   const { data, error } = useData();
-  const [type, setType] = useState("Toutes");
+  const [type, setType] = useState();
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredEvents, setFilteredEvents] = useState();
 
 
-
-useEffect(() => {
-
-   setFilteredEvents((
-    (!type
-      ? data?.events
-      : data?.events) || []
- ).filter((event) => {
-    if(event.type === type || type === "" || type == null|| type === "Toutes"){
-      return true
-    }
-      return false
-  }
-  ).filter((event, index) => {
-    if (
-      (currentPage - 1) * PER_PAGE <= index &&
-      PER_PAGE * currentPage > index
-    ) {
-      return true;
-    }
-    return false;
-  }
-  ));
-
-
-}, [type, data]);
-
-
-  const changeType = (evtType) => {
-   
+ const changeType = (evtType) => {
     setCurrentPage(1);
     setType(evtType);
   };
+
+  // modif data?.event -> ...filter(...)
+  const filteredEvents = (
+    (!type
+      ? data?.events
+      : data?.events.filter((elem)=>elem.type === type)) || []
+  ).filter((_, index) => {
+   
+    if (
+      (currentPage - 1) * PER_PAGE <= index &&
+      PER_PAGE * currentPage > index 
+      ) {
+      return true;
+    }
+    return false;
+  });
+
   const pageNumber = Math.floor((filteredEvents?.length || 0) / PER_PAGE) + 1;
   const typeList = new Set(data?.events.map((event) => event.type));
+
   return (
     <>
       {error && <div>An error occured</div>}
@@ -62,9 +51,6 @@ useEffect(() => {
           <Select
             selection={Array.from(typeList)}
             onChange={(value) => (value ? changeType(value) : changeType(null))}
-
-
-
           />
           <div id="events" className="ListContainer">
             {filteredEvents.map((event) => (
